@@ -1,0 +1,13 @@
+%dw 2.0
+
+type auto_eb85ee2b_7ce4_4376_900d_feb2e1cb98e2_Output_Variables_addReq = {|
+  customerName: String, 
+  age: Number {"typeId": "int"}, 
+  gender: String, 
+  emailID: String, 
+  mobileNum: String, 
+  pickupLocation: String, 
+  carBookingDate*: String, 
+  noOfPassengers: Number {"typeId": "int"}
+|}
+

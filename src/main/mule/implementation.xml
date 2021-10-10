@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	
+	<flow name="getFlightBooking" doc:id="9dce3705-3709-4f2f-9607-259739a490b7" >
+		<logger level="INFO" doc:name="getFlightBookingRequest" doc:id="03d66e7a-29a9-41bd-b8ba-7566f9afd512" message="#[attributes]"/>
+		<http:request method="GET" doc:name="getFlightBooking" doc:id="3d149b68-7866-4cdf-af57-16aab0cee554" config-ref="BackendHTTPConfig" path="${flightBooking.path}/{bookingId}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"bookingId" : attributes.uriParams.bookingID
+}]]]></http:uri-params>
+		</http:request>
+		<logger level="INFO" doc:name="getFlightBookingSysResponse" doc:id="b6c6bb36-5659-43f4-9dbf-37acece581d3" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="8e616cf5-95d7-478f-9ff2-5e9855f3216d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+if(payload.response !=null and payload.response == "Success")      
+{
+  "flightCode": payload.flightCode,
+  "fromAirportCode": payload.source,
+  "toAirportCode": payload.destination,
+  "departureDateTime": payload.dpartureDateTime,
+  "price": payload.price
+}
+else if(payload.response !=null and payload.response != "Success"){
+	message: payload.response
+}
+else
+{
+	message: "Error while fetching the details"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="getFlightBookingAPIResponse" doc:id="a6e717f6-615f-457a-a124-6dfb42eda36d" message="#[payload]"/>
+	</flow>
+	<flow name="addFlightBooking" doc:id="c0a3bfb1-2d8d-4a41-93e4-631b9496511d" >
+		<ee:transform doc:name="Transform Message" doc:id="5f8fd996-f627-4304-b9f4-ba4d11c5fabf" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+"customerName": payload.firstname as String ++ " " ++ payload.lastname as String,
+"age": payload.age,
+"gender": payload.gender,
+"emailID": payload.emailID,
+"mobileNum":payload.mobileNum,
+"flightCode":payload.flightCode,
+"departureDateTime":payload.departureDateTime,
+"source":payload.fromAirportCode,
+"destination":payload.toAirportCode,
+"noOfSeats": payload.noOfSeats
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="addReq" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+"customerName": payload.firstname as String ++ " " ++ payload.lastname as String,
+"age": payload.age,
+"gender": payload.gender,
+"emailID": payload.emailID,
+"mobileNum":payload.mobileNum,
+"flightCode":payload.flightCode,
+"departureDateTime":payload.departureDateTime,
+"source":payload.fromAirportCode,
+"destination":payload.toAirportCode,
+"noOfSeats": payload.noOfSeats
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="addFlightBookingSysRequest" doc:id="cd72b6ba-814c-415a-8da9-097ec5c4a248" message="#[payload]"/>
+		<http:request method="POST" doc:name="addFlightBooking" doc:id="c5479ca1-3a54-4eb0-8cf0-797faa0abcfa" config-ref="BackendHTTPConfig" path="${flightBooking.path}">
+		</http:request>
+		<logger level="INFO" doc:name="addFlightBookingSysResponse" doc:id="313de31a-5a72-4445-9e2c-a829a43bc83a" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="7b926cb4-9778-4a64-8ff1-00e0f29179dc" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+if(payload.response !=null and payload.response == "Success")      
+{
+  "message": "Confirmed",
+  "bookingID": payload.bookingId,
+  "customerName": payload.customerName,
+  "age": payload.age,
+  "gender": payload.gender,
+  "emailID": payload.emailID,
+  "mobileNum": payload.mobileNum,
+  "flightCode": payload.flightCode,
+  "fromAirportCode": payload.source,
+  "toAirportCode": payload.destination,
+  "departureDateTime": payload.departureDateTime,
+  "noOfSeats": vars.addReq.noOfSeats
+}
+else if(payload.response !=null and payload.response != "Success"){
+	message: payload.response
+}
+else
+{
+	message: "Error while booking the flight"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="addFlightBookingAPIResponse" doc:id="91324cb6-3d98-4e1b-a5e5-ab9dd9677d60" message="#[payload]"/>
+	</flow>
+	<flow name="cancelFlightBooking" doc:id="429abd9a-363d-4db5-8c9e-94c583ebb895" >
+		<set-variable value="#[attributes.uriParams.bookingID]" doc:name="Set Variable" doc:id="559a43c7-54fb-4cf7-8200-085e25d8266b" variableName="bookId"/>
+		<logger level="INFO" doc:name="cancelFlightBookingRequest" doc:id="026cd3a6-a7eb-43de-9a0a-278ec7067ae2" />
+		<http:request method="DELETE" doc:name="cancelFlightBooking" doc:id="2f2a0572-f7bb-4e24-89fc-6d28cb8e92af" config-ref="BackendHTTPConfig" path="${flightBooking.path}/{bookingId}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"bookingId" : attributes.uriParams.bookingID
+}]]]></http:uri-params>
+		</http:request>
+		<logger level="INFO" doc:name="cancelFlightBookingSysResponse" doc:id="174808a9-9ea4-4193-b704-2d44f53f57a6" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="8c5f7152-e22c-4141-8648-246e0e1af252" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: if(payload.response !=null and payload.response == "Success") "Cancelled" 
+	else if(payload.response !=null) payload.response
+	else "Cancellation Unsuccessful",
+	bookingID: vars.bookId
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="cancelFlightBookingResponse" doc:id="0e2946df-a0e3-4c58-bda6-b14ae2f71a17" message="#[payload]"/>
+	</flow>
+	<flow name="getCabBooking" doc:id="ba16c2bf-a863-405c-a994-ed2feac22184" >
+		<logger level="INFO" doc:name="getCabBookingRequest" doc:id="91d3786b-6f57-45bb-a0ac-e08a668cc261" message="#[attributes]"/>
+		<http:request method="GET" doc:name="getCabBooking" doc:id="3af067c9-07e5-4d26-b7b0-9fd6073f9a73" config-ref="BackendHTTPConfig" path="${cabBooking.path}/{bookingId}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"bookingId" : attributes.uriParams.bookingID
+}]]]></http:uri-params>
+		</http:request>
+		<logger level="INFO" doc:name="getCabBookingSysResponse" doc:id="02ab7158-04cb-42f0-8812-de7f26b0758d" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="f3659ebd-b615-4611-99b3-2ab4154b6e81" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+if(payload.response !=null and payload.response == "Success")      
+      
+{
+  "message": "Success",
+  "bookingId": payload.bookingId,
+  "customerName": payload.customerName,
+  "carBookingDate": payload.carBookingDate,
+  "carBookingTime": payload.carBookingTime,
+  "carNumber": payload.carNumber,
+  "carType": payload.carType,
+  "driverName": payload.driverName,
+  "driverNumber": payload.driverNumber,
+  "bookingStatus": payload.bookingStatus
+} 
+
+else if(payload.response !=null and payload.response != "Success"){
+	message: payload.response
+}
+else
+{
+	message: "Error while fetching the details"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="getCabBookingAPIResponse" doc:id="b067397c-394a-4672-9de3-521b6dea8c6f" message="#[payload]"/>
+	</flow>
+	<flow name="addCabBooking" doc:id="eb85ee2b-7ce4-4376-900d-feb2e1cb98e2" >
+		<ee:transform doc:name="Transform Message" doc:id="9668c365-eaec-42fa-b459-2d5035260da6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+"customerName": payload.firstName as String ++ " " ++ payload.lastName as String,
+"age": payload.age,
+"gender": payload.gender,
+"emailID": payload.emailID,
+"mobileNum":payload.mobileNum,
+"pickUpLocation":payload.fromLocation,
+"carBookingDate":payload.cabBookingDate,
+"carBookingTime":payload.cabBookingTime,
+"noOfPassengers": payload.noOfSeats
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="addReq" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+"customerName": payload.firstName as String ++ " " ++ payload.lastName as String,
+"age": payload.age,
+"gender": payload.gender,
+"emailID": payload.emailID,
+"mobileNum":payload.mobileNum,
+"pickupLocation":payload.fromLocation,
+"carBookingDate":payload.cabBookingDate,
+"carBookingTime":payload.cabBookingTime,
+"noOfPassengers": payload.noOfSeats
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="addCabBookingSysRequest" doc:id="f188765a-0cb2-4a74-81ad-cc0732a4e50f" message="#[attributes]"/>
+		<http:request method="POST" doc:name="addCabBooking" doc:id="68419041-215b-40d0-91ff-ca369b640c73" config-ref="BackendHTTPConfig" path="${cabBooking.path}">
+		</http:request>
+		<logger level="INFO" doc:name="addCabBookingSysResponse" doc:id="9efd1860-6a91-4d2b-b3b2-c476a464d662" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="72e08a59-b33b-41c7-b988-521f92c3ff7e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+if(payload.response !=null and payload.response == "Success")      
+      
+{
+  "message": "Booking Success",
+  "bookingID": payload.bookingId,
+  "carNumber": payload.carNumber,
+  "driverName": payload.drivername,
+  "driverNumber": payload.driverNumber,
+  "carType": payload.carType
+}
+
+    
+else if(payload.response !=null and payload.response != "Success"){
+	message: payload.response
+}
+else
+{
+	message: "Error while booking the cab"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="addCabBookingAPIResponse" doc:id="548ca52d-5ca7-49e4-b701-c6457587d4ae" message="#[payload]"/>
+	</flow>
+	<flow name="cancelCabBooking" doc:id="515f4918-2e74-499c-90c1-8ff11148285e" >
+		<set-variable value="#[attributes.uriParams.bookingID]" doc:name="Set Variable" doc:id="dd78d856-0be0-4cbb-b9e1-5db5a2ae0765" variableName="bookId"/>
+		<logger level="INFO" doc:name="cancelCabBookingRequest" doc:id="d981a6e7-037e-47de-b91d-977e6754864c" />
+		<http:request method="DELETE" doc:name="cancelCabBooking" doc:id="e62b5f64-eb16-4f6a-bab3-687602e3b684" config-ref="BackendHTTPConfig" path="${cabBooking.path}/{bookingId}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"bookingId" : attributes.uriParams.bookingID
+}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"customerName" : attributes.headers.customerName,
+	"emailId" : attributes.headers.emailId
+}]]]></http:query-params>
+		
+</http:request>
+		<logger level="INFO" doc:name="cancelCabBookingSysResponse" doc:id="b2e53b13-eca1-42a1-8b17-18362506a188" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="93b7d852-26d2-4898-b692-7f607e81c7da" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: if(payload.response !=null and payload.response == "Success") "Cancelled" 
+	else if(payload.response !=null) payload.response
+	else "Cancellation Unsuccessful",
+	bookingID: vars.bookId
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="cancelCabBookingResponse" doc:id="40421e34-3b90-4e33-9d16-0e07b42efdcc" message="#[payload]"/>
+	</flow>
+	
+	<flow name="addHotelBooking" doc:id="491676d2-8ca6-41f3-a72b-3c0d10aba0e0" >
+		<ee:transform doc:name="Transform Message" doc:id="207d996a-2a77-44ef-9376-477a2c8bf28e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.example.org/hotels/
+---
+{
+	ns0#addBookingRequest: {
+		customerName: (payload.firstNamedefault "") ++ " " ++ payload.lastName,
+		age: payload.age as String,
+		gender: payload.gender,
+		emailID: payload.emailID,
+		mobileNum: payload.mobileNum,
+		hotelLocation: payload.hotelLocation,
+		checkInDate: payload.fromDate,
+		checkOutDate: payload.toDate,
+		noOfRooms: payload.noOfRooms as String
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="addHotelBookingSOAPRequest" doc:id="a316dd59-d9b3-42cd-baaa-74e8f3676db5" message="#[payload]"/>
+		<wsc:consume doc:name="addHotelBookingSOAP" doc:id="8c91a80d-e8c6-48dd-9c59-411ea73ef513" config-ref="Web_Service_Consumer_Config" operation="addBooking"/>
+		<logger level="INFO" doc:name="addHotelBookingSOAPResponse" doc:id="7bd05d68-de22-4cf8-b864-b433541ec0b2" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="2b36fa50-d8fd-4867-be41-ee22e6bedb01" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+ns ns0 http://www.example.org/hotels/
+---
+
+if(payload.body.ns0#addBookingResponse.returnCode !=null and payload.body.ns0#addBookingResponse.returnCode == "Success")
+{
+	message: payload.body.ns0#addBookingResponse.returnCode default "",
+	bookingID: payload.body.ns0#addBookingResponse.bookingId default "",
+	customerName: payload.body.ns0#addBookingResponse.customerName default "",
+	hotelName: "Taj Banjara",
+	fromDate: payload.body.ns0#addBookingResponse.checkInDate default "",
+	toDate: payload.body.ns0#addBookingResponse.checkOutDate default "",
+	noOfRooms: payload.body.ns0#addBookingResponse.noOfRooms as Number default 0
+}
+else if(payload.body.ns0#addBookingResponse.returnCode != null)
+{
+	message : payload.body.ns0#addBookingResponse.returnCode
+}
+else
+message: "Booking Failed"]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="addHotelBookingAPIResponse" doc:id="20891f75-afe2-4f42-b435-516d892c4f93" message="#[payload]"/>
+	</flow>
+	<flow name="cancelHotelBooking" doc:id="fefd0e5b-e24c-4595-88a1-1f3d5c23f8dc">
+		<ee:transform doc:name="Transform Message" doc:id="96835054-9ed1-47a6-9dd4-6fa3a124f78b">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.example.org/hotels/
+---
+{
+	ns0#cancelBookingRequest: {
+		bookingId: attributes.uriParams.bookingID,
+		customerName: attributes.headers.customerName,
+		emailId: attributes.headers.emailId
+	}
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="hotelBookId"><![CDATA[%dw 2.0
+output application/json
+---
+id:attributes.uriParams.bookingID]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="cancelHotelBookingSOAPRequest" doc:id="598cfd52-3053-44d4-872c-a2dfd00f71d6" message="#[payload]" />
+		<wsc:consume doc:name="cancelHotelBookingSOAP" doc:id="ec19f0be-a2a7-463d-b7d5-c540245930ea" config-ref="Web_Service_Consumer_Config" operation="cancelbooking" />
+		<logger level="INFO" doc:name="cancelHotelBookingSOAPReq" doc:id="a7d31bf1-e707-420c-b941-1159cfe4b991" message="#[payload]" />
+		<ee:transform doc:name="Transform Message" doc:id="573fb6b5-bd63-4018-8b9a-2c6bdb4068b7">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+ns ns0 http://www.example.org/hotels/
+output application/json
+---
+if(payload.body.ns0#cancelBookingResponse.responseCode != null and payload.body.ns0#cancelBookingResponse.responseCode == "Success")
+{
+	message: "Cancelled",
+	bookingId: vars.hotelBookId.id
+}
+else if(payload.body.ns0#cancelBookingResponse.responseCode != null)
+{
+	message: (payload.body.ns0#cancelBookingResponse.responseCode as String),
+	bookingId: vars.hotelBookId.id
+}
+else
+{
+	message: "Cancellation unsuccessful",
+	bookingId: vars.hotelBookId.id
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="cancelHotelBookingAPIResponse" doc:id="7db872b1-3314-4cb3-8d09-cbb64d304f7a" message="#[payload]" />
+	</flow>
+	<flow name="getHotelBooking" doc:id="951b1260-9f08-4f39-a6b0-797e9240bd30" >
+		<ee:transform doc:name="Transform Message" doc:id="8c3d273e-fe50-489f-bcd8-f927e8b36200" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.example.org/hotels/
+---
+{
+	ns0#getBookingDetailsRequest: {
+		bookingId: attributes.uriParams.bookingID
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="getHotelBookingSOAPRequest" doc:id="081f0a04-0f50-4702-892c-c25350d960f8" message="#[payload]"/>
+		<wsc:consume operation="getBookingDetails" doc:id="ddc6a068-19a9-42a1-9029-795c0d344f85" config-ref="Web_Service_Consumer_Config" doc:name="getHotelBookingSOAP"/>
+		<logger level="INFO" doc:name="getHotelBookingSOAPResponse" doc:id="06ed896d-179c-43bf-bde2-d4e689fbd521" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="709ad491-ecfb-4b7e-bf9f-3c52f263bea1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+ns ns0 http://www.example.org/hotels/
+---
+if(payload.body.ns0#getBookingDetailsResponse != null)
+{
+	customerName: payload.body.ns0#getBookingDetailsResponse.customerName default "",
+	hotelName: "Taj Banjara",
+	hotelLocation: payload.body.ns0#getBookingDetailsResponse.hotelLocation default "",
+	fromDate: payload.body.ns0#getBookingDetailsResponse.checkInDate default "",
+	toDate: payload.body.ns0#getBookingDetailsResponse.checkOutDate default "",
+	noOfRooms: payload.body.ns0#getBookingDetailsResponse.noOfRooms default 0,
+	price: (payload.body.ns0#getBookingDetailsResponse.noOfRooms default 0) * 5000
+}
+else
+message: "Booking details not found"]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="getHotelBookingAPIResponse" doc:id="b26432b3-0285-4d48-927c-19c951609fe6" message="#[payload]"/>
+	</flow>
+</mule>

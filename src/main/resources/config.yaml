@@ -1,0 +1,14 @@
+hotelBookingURL:  "http://bookings-sys-api.us-e2.cloudhub.io/hotel/booking"
+
+backend:
+  host: bookings-sys-api.us-e2.cloudhub.io
+  port: "80"
+  
+flightBooking:
+  path: /sys/flights
+  
+cabBooking:
+  path: /sys/cabs
+  
+http:
+  port: "8081"

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="18add72d-f41b-41e2-bcd0-dda9664a02ce" file="config.yaml" />
+	<wsc:config name="Web_Service_Consumer_Config" doc:name="Web Service Consumer Config" doc:id="eda59f9e-9cf7-4856-a141-2497d4732960" >
+		<wsc:connection wsdlLocation="HotelBooking.wsdl" service="hotelBooking" port="hotelBooking" address="${hotelBookingURL}" />
+	</wsc:config>
+	<http:request-config name="BackendHTTPConfig" doc:name="HTTP Request configuration" doc:id="adce8d54-a72e-4b43-a0ed-c040b56334dd" >
+		<http:request-connection host="${backend.host}" port="${backend.port}" connectionIdleTimeout="900000"/>
+	</http:request-config>
+	<http:listener-config name="bookmyholiday-api-httpListener">
+        <http:listener-connection host="0.0.0.0" port="${http.port}" connectionIdleTimeout="900000"/>
+    </http:listener-config>
+</mule>

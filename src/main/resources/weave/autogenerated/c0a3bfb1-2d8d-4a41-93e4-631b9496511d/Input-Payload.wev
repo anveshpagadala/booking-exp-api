@@ -1,0 +1,17 @@
+%dw 2.0
+
+type auto_c0a3bfb1_2d8d_4a41_93e4_631b9496511d_Input_Payload = {
+  firstname: String, 
+  mobileNum: String, 
+  noOfSeats: Number, 
+  gender: String, 
+  flightCode: String, 
+  departureDateTime: String, 
+  emailID: String, 
+  age: Number, 
+  fromAirportCode: "HYD" | "MUM", 
+  lastname: String, 
+  toAirportCode: "HYD" | "MUM", 
+  _?: Any
+}
+

@@ -1,0 +1,16 @@
+      
+{
+  "firstname": "Divyansh",
+  "lastname": "Kumar",
+  "age": 23,
+  "gender": "M",
+  "emailID": "div@gmail.com",
+  "mobileNum": "9999888822",
+  "flightCode": "ER0945",
+  "fromAirportCode": "HYD",
+  "toAirportCode": "MUM",
+  "departureDateTime": "2016-02-28T16:41:41.090Z",
+  "noOfSeats": 2
+}
+
+    

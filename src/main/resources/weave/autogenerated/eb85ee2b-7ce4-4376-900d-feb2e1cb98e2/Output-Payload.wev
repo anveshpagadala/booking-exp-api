@@ -1,0 +1,12 @@
+%dw 2.0
+
+type auto_eb85ee2b_7ce4_4376_900d_feb2e1cb98e2_Output_Payload = {
+  carNumber: String, 
+  driverNumber: String, 
+  carType: String, 
+  driverName: String, 
+  message: String, 
+  bookingID: String, 
+  _?: Any
+}
+

@@ -1,0 +1,16 @@
+%dw 2.0
+
+type auto_491676d2_8ca6_41f3_a72b_3c0d10aba0e0_Input_Payload = {
+  fromDate: String, 
+  firstName: String, 
+  lastName: String, 
+  mobileNum: Number, 
+  gender: String, 
+  toDate: String, 
+  emailID: String, 
+  noOfRooms: Number, 
+  hotelLocation: "HYD" | "MUM", 
+  age: Number, 
+  _?: Any
+}
+

@@ -1,0 +1,26 @@
+%dw 2.0
+
+type auto_fefd0e5b_e24c_4595_88a1_1f3d5c23f8dc_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|
+    customerName: String, 
+    emailId: String
+  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {| bookingID: String |}, 
+  version: String, 
+  localAddress: String
+|}
+

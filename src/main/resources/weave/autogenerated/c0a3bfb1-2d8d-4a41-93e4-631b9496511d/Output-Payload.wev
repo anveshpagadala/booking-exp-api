@@ -1,0 +1,18 @@
+%dw 2.0
+
+type auto_c0a3bfb1_2d8d_4a41_93e4_631b9496511d_Output_Payload = {
+  mobileNum: String, 
+  noOfSeats: Number, 
+  gender: String, 
+  flightCode: String, 
+  departureDateTime: String, 
+  emailID: String, 
+  message: String, 
+  bookingID: String, 
+  customerName: String, 
+  age: Number, 
+  fromAirportCode: String, 
+  toAirportCode: String, 
+  _?: Any
+}
+

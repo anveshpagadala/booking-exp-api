@@ -1,0 +1,12 @@
+{
+	"firstName": "Divyansh",
+	"lastName": "Kumar",
+	"age": 23,
+	"gender": "M",
+	"emailID": "div@gmail.com",
+	"mobileNum": "9999888877",
+	"hotelLocation": "HYD",
+	"fromDate": "2016-02-28",
+	"toDate": "2016-02-28",
+	"noOfRooms": 1
+}

@@ -1,0 +1,15 @@
+%dw 2.0
+
+type auto_c0a3bfb1_2d8d_4a41_93e4_631b9496511d_Output_Variables_addReq = {|
+  customerName: String, 
+  age: Number {"typeId": "int"}, 
+  gender: String, 
+  emailID: String, 
+  mobileNum: String, 
+  flightCode: String, 
+  departureDateTime: String, 
+  source: String, 
+  destination: String, 
+  noOfSeats: Number {"typeId": "int"}
+|}
+

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ws="http://www.example.org/hotels/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="hotelBooking" targetNamespace="http://www.example.org/hotels/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://www.example.org/hotels/">
+      <xsd:element name="getBookingDetailsRequest">
+        <xsd:complexType>
+          <xsd:sequence>
+				<xsd:element name="bookingId" type="xsd:string"></xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getBookingDetailsResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          	<xsd:element name="bookingId" type="xsd:string" minOccurs="0"></xsd:element>
+          	<xsd:element name="customerName" type="xsd:string" minOccurs="0"></xsd:element>
+          	<xsd:element name="hotelLocation" type="xsd:string" minOccurs="0"></xsd:element>
+          	<xsd:element name="checkInDate" type="xsd:string" minOccurs="0"></xsd:element>
+          	<xsd:element name="checkOutDate" type="xsd:string" minOccurs="0"></xsd:element>
+          	<xsd:element name="noOfRooms" type="xsd:int" minOccurs="0"></xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="addBookingRequest">
+      	<xsd:complexType>
+      		<xsd:sequence>
+				<xsd:element name="customerName" type="xsd:string"></xsd:element>
+				<xsd:element name="age" type="xsd:string"></xsd:element>
+				<xsd:element name="gender" type="xsd:string"></xsd:element>
+				<xsd:element name="emailID" type="xsd:string"></xsd:element>
+				<xsd:element name="mobileNum" type="xsd:string"></xsd:element>
+				<xsd:element name="hotelLocation" type="xsd:string"></xsd:element>
+				<xsd:element name="checkInDate" type="xsd:string"></xsd:element>
+				<xsd:element name="checkOutDate" type="xsd:string"></xsd:element>
+				<xsd:element name="noOfRooms" type="xsd:string"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="addBookingResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+				<xsd:element name="returnCode" type="xsd:string"></xsd:element>
+      			<xsd:element name="bookingId" type="xsd:string" minOccurs="0"></xsd:element>
+      			<xsd:element name="customerName" type="xsd:string" minOccurs="0"></xsd:element>
+      			<xsd:element name="checkInDate" type="xsd:string" minOccurs="0"></xsd:element>
+				<xsd:element name="checkOutDate" type="xsd:string" minOccurs="0"></xsd:element>
+				<xsd:element name="noOfRooms" type="xsd:string" minOccurs="0"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="cancelBookingRequest">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="bookingId" type="xsd:string"></xsd:element>
+				<xsd:element name="customerName" type="xsd:string"></xsd:element>
+				<xsd:element name="emailId" type="xsd:string"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="cancelBookingResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+
+      			<xsd:element name="responseCode" type="xsd:string"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+  </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="getBookingDetailsRequest">
+    <wsdl:part element="ws:getBookingDetailsRequest" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getBookingDetailsResponse">
+    <wsdl:part element="ws:getBookingDetailsResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="addBookingRequest">
+  	<wsdl:part name="parameters" element="ws:addBookingRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="addBookingResponse">
+  	<wsdl:part name="parameters" element="ws:addBookingResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="cancelBookingRequest">
+  	<wsdl:part name="parameters" element="ws:cancelBookingRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="cancelBookingResponse">
+  	<wsdl:part name="parameters" element="ws:cancelBookingResponse"></wsdl:part>
+  </wsdl:message>
+  
+  <wsdl:portType name="hotelBooking">
+    <wsdl:operation name="getBookingDetails">
+      <wsdl:input message="ws:getBookingDetailsRequest"/>
+      <wsdl:output message="ws:getBookingDetailsResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="addBooking">
+    	<wsdl:input message="ws:addBookingRequest"></wsdl:input>
+    	<wsdl:output message="ws:addBookingResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="cancelbooking">
+    	<wsdl:input message="ws:cancelBookingRequest"></wsdl:input>
+    	<wsdl:output message="ws:cancelBookingResponse"></wsdl:output>
+    </wsdl:operation>
+
+  </wsdl:portType>
+  <wsdl:binding name="hotelBooking" type="ws:hotelBooking">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="getBookingDetails">
+      <soap:operation soapAction="http://www.example.org/hotel/getBookingDetails"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+        <wsdl:operation name="addBooking">
+      <soap:operation soapAction="http://www.example.org/hotel/addBooking"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+        <wsdl:operation name="cancelbooking">
+      <soap:operation soapAction="http://www.example.org/hotel/cancelbooking"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    
+  </wsdl:binding>
+  <wsdl:service name="hotelBooking">
+    <wsdl:port binding="ws:hotelBooking" name="hotelBooking">
+      <soap:address location="http://localhost:8081/hotel"/>
+    </wsdl:port>
+  </wsdl:service>
+
+</wsdl:definitions>
